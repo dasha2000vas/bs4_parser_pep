@@ -16,8 +16,12 @@ def get_response(session, url):
         )
 
 
-def find_tag(soup, tag, attrs=None):
-    searched_tag = soup.find(tag, attrs=(attrs or {}))
+def find_tag(soup, tag=None, string=None, attrs=None):
+    if tag:
+        searched_tag = soup.find(tag, attrs=(attrs or {}))
+    else:
+        searched_tag = soup.find(string=string)
+        return searched_tag
     if searched_tag is None:
         error_msg = f'Не найден тег {tag} {attrs}'
         logging.error(error_msg, stack_info=True)

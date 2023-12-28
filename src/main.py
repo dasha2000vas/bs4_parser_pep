@@ -79,6 +79,8 @@ def download(session):
     pdf_a4_link = pdf_a4_tag['href']
     archive_url = urljoin(downloads_url, pdf_a4_link)
     response = session.get(archive_url)
+    if response is None:
+        return
     filename = archive_url.split('/')[-1]
     downloads_dir = BASE_DIR / 'downloads'
     downloads_dir.mkdir(exist_ok=True)
@@ -113,6 +115,7 @@ def pep(session):
     tr_tags = [
         find_tag(table_tag, 'tbody').find_all('tr') for table_tag in table_tags
     ]
+    unexpected = ['Несовпадающие статусы']
     for tr_tags_by_table in tqdm(tr_tags):
         for tr_tag in tr_tags_by_table:
             abbr = find_tag(tr_tag, 'td')
@@ -123,29 +126,28 @@ def pep(session):
             pep_index = find_tag(tr_tag, 'a')
             pep_link = urljoin(MAIN_PEP_URL, pep_index['href'])
             response = get_response(session, pep_link)
+            if response is None:
+                return
             soup = BeautifulSoup(response.text, 'lxml')
             dl_tag = find_tag(
                 soup, 'dl', attrs={'class': 'rfc2822 field-list simple'}
             )
             for tag in dl_tag.find_all():
-                if tag.find(string='Status'):
+                if find_tag(tag, string='Status'):
                     status_in_text = tag
             status = status_in_text.find_next_sibling('dd').text
             if status not in EXPECTED_STATUS[acronym]:
-                logging.info(
-                    'Несовпадающие статусы:\n'
+                unexpected.append(
                     f'{pep_link} '
                     f'Статус в карточке: {status} '
                     f'Ожидаемые статусы: {EXPECTED_STATUS[acronym]}'
                 )
                 continue
             status_count[status] += 1
-            status_count['Total'] += 1
+    status_count['Total'] = sum(status_count.values())
+    logging.info('\n'.join(unexpected))
     result = [('Статус', 'Количество')]
-    for key, value in status_count.items():
-        result.append(
-            (key, value)
-        )
+    result.extend(status_count.items())
     return result
 
 

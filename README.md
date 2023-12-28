@@ -10,7 +10,7 @@
 
 ```bash
 git clone git@github.com:dasha2000vas/bs4_parser_pep.git
-cd bs4_parser_pep
+cd bs4_parser_pep/src 
 ```
 
 2. **Создать и активировать виртуальное окружение:**
