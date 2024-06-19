@@ -73,3 +73,12 @@ file - в отдельный файл в папку results.
 * prettytable2.1.0
 * requests-cache1.0.0
 * tqdm4.66.1
+
+---
+
+## Автор:
+
+* Василевская Дарья
+* GitHub: https://github.com/dasha2000vas
+* Телеграм: https://t.me/vasdascha
+* Почта: vasilevsckaya.dascha@yandex.ru
